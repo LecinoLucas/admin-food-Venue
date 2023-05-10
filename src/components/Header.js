@@ -1,7 +1,13 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
+
 
 const Header = () => {
+    const history = useHistory();
+    const loggout = () => {
+        localStorage.removeItem('token'); // Remover o token de autenticação do localStorage
+        history.push('/');
+    }
     return (
         <header className="bg-blue-500 py-4">
             <nav className="container mx-auto flex justify-between items-center">
@@ -19,13 +25,12 @@ const Header = () => {
                     >
                         Login
                     </NavLink>
-                    <NavLink
-                        to="/signup"
-                        activeClassName="text-blue-300"
-                        className="text-white"
+                    <div
+                        onClick={loggout}
+                        className="text-white cursor-pointer"
                     >
-                        Signup
-                    </NavLink>
+                        Sair
+                    </div>
                 </div>
             </nav>
         </header>

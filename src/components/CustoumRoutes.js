@@ -6,7 +6,7 @@ import Dashboard from '../pages/Dashboard';
 import Login from '../pages/Login/Login';
 import ManageOrders from '../pages/ManageOrders';
 import ManageReservations from '../pages/ManageReservations';
-import Signup from '../pages/Signup';
+import Register from '../pages/Register/Register';
 import Header from './Header';
 import PrivateRoute from './PrivateRoute';
 
@@ -15,10 +15,10 @@ const CustomRoutes = () => {
 
     return (
         <>
-            {location.pathname !== '/' && <Header />}
+            {location.pathname !== '/' && location.pathname !== '/cadastro' && <Header />}
             <Switch>
                 <Route path="/" exact component={Login} />
-                <Route path="/signup" component={Signup} />
+                <Route path="/cadastro" component={Register} />
                 <PrivateRoute path="/dashboard" component={Dashboard} />
                 <PrivateRoute path="/add-dish" component={AddDish} />
                 <PrivateRoute path="/add-table" component={AddTable} />

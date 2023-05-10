@@ -1,9 +1,13 @@
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 
+const isLoggedIn = () => {
+    const token = localStorage.getItem('token');
+    return token !== null;
+}
+
 const PrivateRoute = ({ component: Component, ...rest }) => {
-    // Substitua a linha abaixo pela sua lógica de autenticação
-    const isAuthenticated = false;
+    const isAuthenticated = isLoggedIn();
 
     return (
         <Route
@@ -12,7 +16,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
                 isAuthenticated ? (
                     <Component {...props} />
                 ) : (
-                    <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
+                    <Redirect to={{ pathname: '/', state: { from: props.location } }} />
                 )
             }
         />
