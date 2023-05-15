@@ -1,29 +1,36 @@
 import React from 'react';
-import { Route, Switch, useLocation } from 'react-router-dom';
-import AddDish from '../pages/AddDish';
-import AddTable from '../pages/AddTable';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 import Login from '../pages/Login/Login';
-import ManageOrders from '../pages/ManageOrders';
-import ManageReservations from '../pages/ManageReservations';
 import Register from '../pages/Register/Register';
 import Header from './Header';
 import PrivateRoute from './PrivateRoute';
 
+const isLoggedIn = () => {
+    const token = localStorage.getItem('token');
+    return token !== null;
+}
+
 const CustomRoutes = () => {
     const location = useLocation();
+    const isAuthenticated = isLoggedIn();
 
     return (
         <>
             {location.pathname !== '/' && location.pathname !== '/cadastro' && <Header />}
             <Switch>
-                <Route path="/" exact component={Login} />
+                <Route path="/" exact render={() => (
+                    isAuthenticated ? (
+                        <Redirect to="/pedidos" />
+                    ) : (
+                        <Login />
+                    )
+                )} />
                 <Route path="/cadastro" component={Register} />
-                <PrivateRoute path="/dashboard" component={Dashboard} />
-                <PrivateRoute path="/add-dish" component={AddDish} />
-                <PrivateRoute path="/add-table" component={AddTable} />
-                <PrivateRoute path="/manage-orders" component={ManageOrders} />
-                <PrivateRoute path="/manage-reservations" component={ManageReservations} />
+                <PrivateRoute path="/pedidos" component={Dashboard} />
+                <PrivateRoute path="/pratos" component={Dashboard} />
+                <PrivateRoute path="/mesas" component={Dashboard} />
+                <PrivateRoute path="/manage-reservations" component={Dashboard} />
             </Switch>
         </>
     );

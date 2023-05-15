@@ -89,7 +89,7 @@ const Register = () => {
                                     id="nome"
                                     value={nome}
                                     onChange={(e) => setNome(e.target.value)}
-                                    label="Nome"
+                                    label="Nome do Restaurante"
                                     required
                                 />
                             </div>

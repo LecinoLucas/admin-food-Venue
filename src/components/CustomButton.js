@@ -1,7 +1,7 @@
 import React from 'react';
 
 const CustomButton = ({ children, color, text, loading, onClick, disabled }) => {
-    const buttonClasses = `bg-${color} text-white px-5 py-2 rounded w-full hover:bg-${color}-600 focus:ring-2 focus:ring-${color}-500 focus:outline-none`;
+    const buttonClasses = `bg-${color} text-white px-5 py-2 rounded w-full hover:bg-secondary focus:ring-2 focus:ring-${color}-500 focus:outline-none`;
     const spinnerClasses = `animate-spin -ml-1 mr-3 h-5 w-5 text-white`;
 
     return (

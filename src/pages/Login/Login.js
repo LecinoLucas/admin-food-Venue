@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import CustomButton from '../../components/CustomButton';
 import Input from '../../components/Input';
 import Toast from '../../components/Toast';
 import { useLoading } from '../../context/LoadingContexts';
+import { RestaurantContext } from '../../context/RestauranteContext';
 import foodVenueLogo from '../../images/foodVenueLogo.jpg';
 import loginImage from '../../images/loginImage.jpg';
 import useAxiosInstance from '../../utils/axiosInstance';
@@ -16,6 +17,7 @@ const Login = () => {
     const [passwordError, setPasswordError] = useState(false);
     const [toastVisible, setToastVisible] = useState(false);
     const [toastRegister, setToastRegister] = useState(false);
+    const { setUsuario, setRestaurante } = useContext(RestaurantContext);
     const { isLoading } = useLoading();
     const history = useHistory();
     const axiosInstance = useAxiosInstance()
@@ -33,8 +35,23 @@ const Login = () => {
         }
         axiosInstance.post('/api/auth/signin', { email, senha: password })
             .then((response) => {
+
                 localStorage.setItem('token', response.data.token);
-                history.push('/dashboard');
+                axiosInstance.get('/api/restaurantes/get').then((resp) => {
+                    setUsuario(resp?.data?.usuario)
+                    setRestaurante({
+                        aberto: resp?.data?.aberto,
+                        descricao: resp?.data?.descricao,
+                        id: resp?.data?.id,
+                        imagem: resp?.data?.imagem,
+                        nome: resp?.data?.nome,
+                    })
+                }).catch((error) => {
+                    setEmailError(true);
+                    setPasswordError(true);
+                    setToastVisible(true);
+                })
+                history.push('/pedidos');
             })
             .catch(() => {
                 setEmailError(true);
@@ -71,7 +88,7 @@ const Login = () => {
                                     id='buttonRegister'
                                     type="submit"
                                     onClick={redirectToRegister}
-                                    className="bg-highlight w-1/2 text-white p-3 text-2xl rounded hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    className="bg-highlight w-1/2 text-white p-3 text-2xl rounded hover:bg-primary focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                 >
                                     Cadastre-se aqui!
                                 </button>

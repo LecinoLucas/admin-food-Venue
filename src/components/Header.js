@@ -1,37 +1,54 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
-
-
+import { RestaurantContext } from '../context/RestauranteContext';
+import ProfileDropdown from './ProfileDropdown';
 const Header = () => {
     const history = useHistory();
+    const { data } = useContext(RestaurantContext);
     const loggout = () => {
         localStorage.removeItem('token'); // Remover o token de autenticação do localStorage
         history.push('/');
     }
+
+    const restaurantName = data?.restaurante?.nome;
+    console.log(data)
     return (
-        <header className="bg-blue-500 py-4">
+        <header className="bg-primary py-4">
             <nav className="container mx-auto flex justify-between items-center">
-                <NavLink
-                    to="/"
-                    className="text-white font-semibold text-xl"
-                >
-                    FoodVenue Admin
-                </NavLink>
-                <div className="flex space-x-4">
+                <div className="flex items-center space-x-4">
                     <NavLink
-                        to="/login"
-                        activeClassName="text-blue-300"
-                        className="text-white"
+                        to="/pedidos"
+                        className="text-white font-semibold text-xl"
+                        activeClassName="font-bold"
                     >
-                        Login
+                        FoodVenue Admin
                     </NavLink>
-                    <div
-                        onClick={loggout}
-                        className="text-white cursor-pointer"
+                    <div className="border-r border-white h-6"></div>
+                    <NavLink
+                        to="/pedidos"
+                        className="text-white"
+                        activeClassName="font-bold"
                     >
-                        Sair
-                    </div>
+                        Pedidos
+                    </NavLink>
+                    <div className="border-r border-white h-6"></div>
+                    <NavLink
+                        to="/pratos"
+                        className="text-white"
+                        activeClassName="font-bold"
+                    >
+                        Pratos
+                    </NavLink>
+                    <div className="border-r border-white h-6"></div>
+                    <NavLink
+                        to="/mesas"
+                        className="text-white"
+                        activeClassName="font-bold"
+                    >
+                        Mesas
+                    </NavLink>
                 </div>
+                <ProfileDropdown loggout={loggout} restaurantName={restaurantName} />
             </nav>
         </header>
     );
