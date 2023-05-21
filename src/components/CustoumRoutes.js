@@ -1,5 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import AddDish from '../pages/AddDish';
 import Dashboard from '../pages/Dashboard';
 import Login from '../pages/Login/Login';
 import Register from '../pages/Register/Register';
@@ -28,7 +29,7 @@ const CustomRoutes = () => {
                 )} />
                 <Route path="/cadastro" component={Register} />
                 <PrivateRoute path="/pedidos" component={Dashboard} />
-                <PrivateRoute path="/pratos" component={Dashboard} />
+                <PrivateRoute path="/pratos" component={AddDish} />
                 <PrivateRoute path="/mesas" component={Dashboard} />
                 <PrivateRoute path="/manage-reservations" component={Dashboard} />
             </Switch>

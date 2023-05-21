@@ -15,6 +15,9 @@ const OrderPage = () => {
     const [openModalInfo, setOpenModalInfo] = useState(false);
     const [openModalStatus, setOpenModalStatus] = useState(false);
     const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('error');
+    const [toastTitle, setToastTitle] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [orders, setOrders] = useState(null);
     const { data, setUsuario, setRestaurante } = useContext(RestaurantContext);
@@ -41,12 +44,66 @@ const OrderPage = () => {
                     }
                 })
                 .catch((err) => {
-                    console.log(err)
+                    setToastMessage("Ouve um erro no servidor, aguarde algum tempo e tente novamente")
+                    setToastType('error')
+                    setToastTitle('Erro interno')
                     setToastVisible(true);
                 });
         }
 
     }, [data, axiosInstance]);
+
+    const setNextStepStatusOrder = () => {
+        axiosInstance.put(`/api/pedidos/${selectedOrder.id}`, {
+            ...selectedOrder,
+            status: getNextStatus(selectedOrder.status)
+        }).then(() => {
+            getOrders()
+            setToastMessage("Etapa avançada com sucesso!")
+            setToastType('success')
+            setToastTitle('Sucesso ao editar')
+            setToastVisible(true);
+        }).catch(() => {
+            setToastMessage("Ouve um erro ao avançar etápa do pedido, cheque as informações e tente novamente!")
+            setToastType('error')
+            setToastTitle('Erro interno')
+            setToastVisible(true);
+        })
+    }
+
+    const getNextStatus = (status) => {
+        const currentIndex = mapStatusOrder.findIndex(item => item.name === status);
+        if (currentIndex !== -1 && currentIndex < mapStatusOrder.length - 1) {
+            return mapStatusOrder[currentIndex + 1].name;
+        }
+        return null;
+    };
+
+
+
+    const mapStatusOrder = [
+        {
+            name: "AGUARDANDO_APROVACAO",
+            patternedName: 'Aguardando aprovação'
+        },
+        {
+            name: "PREPARANDO",
+            patternedName: 'Preparando'
+        },
+        {
+            name: "A_CAMINHO",
+            patternedName: 'A caminho'
+        },
+        {
+            name: "ENTREGUE",
+            patternedName: 'Entregue'
+        },
+    ]
+
+    const getPatternedStatusName = (name) => {
+        const status = mapStatusOrder.find(status => status.name === name);
+        return status ? status.patternedName : '';
+    };
 
     useEffect(() => {
         setIsOpen(data?.restaurante?.aberto);
@@ -65,6 +122,10 @@ const OrderPage = () => {
     const handleOpenModalStatus = (order) => {
         setSelectedOrder(order);
         setOpenModalStatus(true);
+    };
+    const handleSaveModalStatus = () => {
+        setNextStepStatusOrder();
+        setOpenModalStatus(false);
     };
 
     const handleCloseModalStatus = () => {
@@ -100,7 +161,7 @@ const OrderPage = () => {
 
         {
             header: 'Status',
-            render: (order) => order.status,
+            render: (order) => getPatternedStatusName(order.status),
         },
         {
             header: 'Ações',
@@ -160,8 +221,9 @@ const OrderPage = () => {
             <Modal
                 isOpen={openModalStatus}
                 title="Alterar status do pedido"
-                onSave={handleOpenModalStatus}
+                onSave={handleSaveModalStatus}
                 onCancel={handleCloseModalStatus}
+                disabledButton={selectedOrder?.status === 'ENTREGUE'}
                 labelButtonSave="Mudar status"
                 labelButtonCancel="Cancelar"
             >
@@ -169,9 +231,9 @@ const OrderPage = () => {
             </Modal>
             <Toast
                 isVisible={toastVisible}
-                type="error"
-                title="Erro interno"
-                message="Ouve um erro no servidor, aguarde algum tempo e tente novamente"
+                type={toastType}
+                title={toastTitle}
+                message={toastMessage}
                 duration={3000}
                 onDismiss={() => setToastVisible(false)}
             />

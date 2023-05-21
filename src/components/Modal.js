@@ -1,10 +1,10 @@
 import React from 'react';
+import CustomButton from './CustomButton';
 
-const Modal = ({ isOpen, title, children, onSave, onCancel, labelButtonSave, labelButtonCancel }) => {
+const Modal = ({ isOpen, title, children, onSave, onCancel, labelButtonSave, labelButtonCancel, disabledButton = false }) => {
     if (!isOpen) {
         return null;
     }
-
     return (
         <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -19,21 +19,27 @@ const Modal = ({ isOpen, title, children, onSave, onCancel, labelButtonSave, lab
                     </div>
                     <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         {
-                            labelButtonSave && <button
+                            labelButtonSave && <CustomButton
+                                color="primary"
                                 type="button"
-                                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-secondary focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
+                                width='w-1/3'
+                                disabled={disabledButton}
+                                className={`inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary text-base font-medium text-white hover:bg-secondary focus:outline-none sm:ml-3 sm:w-auto sm:text-sm ${disabledButton ? 'cursor-not-allowed opacity-50' : ''}`}
                                 onClick={onSave}
                             >
                                 {labelButtonSave}
-                            </button>
+                            </CustomButton>
                         }
-                        {labelButtonCancel && <button
+                        {labelButtonCancel && <CustomButton
                             type="button"
+                            color="white"
+                            textColor='text-gray-700'
+                            border='border border-gray-300'
                             className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                             onClick={onCancel}
                         >
                             {labelButtonCancel}
-                        </button>}
+                        </CustomButton>}
                     </div>
                 </div>
             </div>

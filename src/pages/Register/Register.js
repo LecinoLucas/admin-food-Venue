@@ -56,7 +56,6 @@ const Register = () => {
                 localStorage.setItem("registerMessage", "true")
                 history.push('/')
             }).catch((error) => {
-                console.log(error)
                 setToastVisible(true);
             })
             .catch(() => {

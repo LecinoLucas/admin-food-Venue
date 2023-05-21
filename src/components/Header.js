@@ -11,7 +11,6 @@ const Header = () => {
     }
 
     const restaurantName = data?.restaurante?.nome;
-    console.log(data)
     return (
         <header className="bg-primary py-4">
             <nav className="container mx-auto flex justify-between items-center">
