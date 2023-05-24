@@ -12,14 +12,10 @@ export function base64ToImageUrl(base64) {
         const url = URL.createObjectURL(blob);
         return url;
     }
-
 }
 
 export async function blobUrlToBase64(blobUrl) {
-    // Fetch the blob from the Blob URL
     const blob = await fetch(blobUrl).then(r => r.blob());
-
-    // Read the blob as a Base64 string
     const base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result);
@@ -27,7 +23,6 @@ export async function blobUrlToBase64(blobUrl) {
         reader.readAsDataURL(blob);
     });
 
-    // Return the Base64 string, without the data URL prefix
     return base64.split(',')[1];
 }
 

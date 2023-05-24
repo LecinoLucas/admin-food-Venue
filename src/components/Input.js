@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Input = ({ type, id, value, onChange, label, required, error }) => {
+const Input = ({ type, id, value, onChange, label, required, error, placeHolder = '' }) => {
     const borderColor = error ? 'border-red-500' : 'border-gray-300';
     const focusBorderColor = error ? 'focus:border-red-500' : 'focus:border-blue-500';
     const focusRingColor = error ? 'focus:ring-red-500' : 'focus:ring-blue-500';
@@ -12,6 +12,7 @@ const Input = ({ type, id, value, onChange, label, required, error }) => {
             </label>
             <input
                 type={type}
+                placeholder={placeHolder}
                 id={id}
                 value={value}
                 onChange={onChange}

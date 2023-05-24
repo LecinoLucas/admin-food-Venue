@@ -1,16 +1,21 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
 import { RestaurantContext } from '../context/RestauranteContext';
 import ProfileDropdown from './ProfileDropdown';
 const Header = () => {
     const history = useHistory();
-    const { data } = useContext(RestaurantContext);
+    const { data, forceUpdate } = useContext(RestaurantContext);
+    const [nome, setNome] = useState('')
     const loggout = () => {
-        localStorage.removeItem('token'); // Remover o token de autenticação do localStorage
+        localStorage.removeItem('token');
         history.push('/');
     }
 
-    const restaurantName = data?.restaurante?.nome;
+
+    useEffect(() => {
+        setNome(data?.restaurante?.nome)
+    }, [data?.restaurante, forceUpdate])
+
     return (
         <header className="bg-primary py-4">
             <nav className="container mx-auto flex justify-between items-center">
@@ -40,14 +45,14 @@ const Header = () => {
                     </NavLink>
                     <div className="border-r border-white h-6"></div>
                     <NavLink
-                        to="/mesas"
+                        to="/perfil"
                         className="text-white"
                         activeClassName="font-bold"
                     >
-                        Mesas
+                        Perfil
                     </NavLink>
                 </div>
-                <ProfileDropdown loggout={loggout} restaurantName={restaurantName} />
+                <ProfileDropdown loggout={loggout} restaurantName={nome} />
             </nav>
         </header>
     );

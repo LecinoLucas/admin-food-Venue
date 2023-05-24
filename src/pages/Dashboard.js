@@ -1,8 +1,10 @@
+import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import DataTable from '../components/DataTable';
+import Input from '../components/Input';
 import Modal from '../components/Modal';
 import OrderStatusStepper from '../components/OrderStatusStepper';
 import Toast from '../components/Toast';
@@ -20,6 +22,7 @@ const OrderPage = () => {
     const [toastTitle, setToastTitle] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [orders, setOrders] = useState(null);
+    const [openModalCancel, setOpenModalCancel] = useState(false);
     const { data, setUsuario, setRestaurante } = useContext(RestaurantContext);
     const axiosInstance = useAxiosInstance()
     const toggleOpen = () => {
@@ -34,6 +37,33 @@ const OrderPage = () => {
             })
         }))
     }
+
+    const handleOpenModalCancel = (order) => {
+        setSelectedOrder(order);
+        setOpenModalCancel(true);
+    };
+
+    const handleCloseModalCancel = () => {
+        setOpenModalCancel(false);
+    };
+
+    const handleCancelPedido = () => {
+        axiosInstance.put(`/api/pedidos/${selectedOrder.id}/cancelar`)
+            .then(() => {
+                getOrders();
+                setToastMessage("Pedido cancelado com sucesso!");
+                setToastType('success');
+                setToastTitle('Sucesso ao cancelar');
+                setToastVisible(true);
+                setOpenModalCancel(false);
+            })
+            .catch(() => {
+                setToastMessage("Ocorreu um erro ao cancelar o pedido. Verifique as informações e tente novamente!");
+                setToastType('error');
+                setToastTitle('Erro interno');
+                setToastVisible(true);
+            });
+    };
 
     const getOrders = useCallback(() => {
         if (data?.restaurante?.id) {
@@ -79,8 +109,6 @@ const OrderPage = () => {
         return null;
     };
 
-
-
     const mapStatusOrder = [
         {
             name: "AGUARDANDO_APROVACAO",
@@ -97,6 +125,10 @@ const OrderPage = () => {
         {
             name: "ENTREGUE",
             patternedName: 'Entregue'
+        },
+        {
+            name: "CANCELADO",
+            patternedName: 'Cancelado'
         },
     ]
 
@@ -124,12 +156,46 @@ const OrderPage = () => {
         setOpenModalStatus(true);
     };
     const handleSaveModalStatus = () => {
+        if (selectedOrder.status === "CANCELADO") {
+            setToastMessage("Não é possível alterar o status de um pedido cancelado!");
+            setToastType('error');
+            setToastTitle('Erro ao alterar status');
+            setToastVisible(true);
+            return;
+        }
         setNextStepStatusOrder();
         setOpenModalStatus(false);
     };
 
     const handleCloseModalStatus = () => {
         setOpenModalStatus(false);
+    };
+
+    const handleSearch = (event) => {
+        const query = event.target.value.toLowerCase();
+        const filteredOrders = filterOrders(query);
+        setOrders(filteredOrders);
+
+        if (query === '') {
+            getOrders();
+        }
+    };
+
+    const filterOrders = (query) => {
+        if (!query) {
+            return orders;
+        }
+
+        return orders.filter((order) => {
+            const clientName = order.cliente.nome.toLowerCase().includes(query);
+            const orderItems = order.itens.some((item) =>
+                item.prato.nome.toLowerCase().includes(query)
+            );
+
+            const orderStatus = order.status.toLowerCase().includes(query);
+
+            return clientName || orderItems || orderStatus;
+        });
     };
 
     const columns = [
@@ -173,9 +239,17 @@ const OrderPage = () => {
                     <button className='ml-1' onClick={() => handleOpenModalStatus(order)}>
                         <EditIcon />
                     </button>
+                    <button
+                        className={`ml-1 ${order.status === 'ENTREGUE' || order.status === 'CANCELADO' ? 'cursor-not-allowed opacity-50' : ''}`}
+                        onClick={() => handleOpenModalCancel(order)}
+                        disabled={order.status === 'ENTREGUE' || order.status === 'CANCELADO'}
+                    >
+                        <CancelIcon />
+                    </button>
                 </>
             ),
         },
+
     ];
 
 
@@ -183,9 +257,20 @@ const OrderPage = () => {
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Pedidos</h1>
 
-            <div className="mb-4">
-                <label className="mr-2">Restaurante está:</label>
-                <ToggleButton isOpen={isOpen} toggleOpen={toggleOpen} />
+            <div className="flex items-center justify-between mb-4">
+                <div className="w-52">
+                    <Input
+                        type="text"
+                        id="searchQuery"
+                        placeHolder="Cliente, items ou status"
+                        onChange={handleSearch}
+                        label="Pesquisar"
+                    />
+                </div>
+                <div>
+                    <label className="mr-2">Restaurante está:</label>
+                    <ToggleButton isOpen={isOpen} toggleOpen={toggleOpen} />
+                </div>
             </div>
             <Modal
                 isOpen={openModalInfo}
@@ -228,6 +313,16 @@ const OrderPage = () => {
                 labelButtonCancel="Cancelar"
             >
                 {selectedOrder && <OrderStatusStepper currentStatus={selectedOrder.status} />}
+            </Modal>
+            <Modal
+                isOpen={openModalCancel}
+                title="Cancelar Pedido"
+                onSave={handleCancelPedido}
+                onCancel={handleCloseModalCancel}
+                labelButtonSave="Cancelar Pedido"
+                labelButtonCancel="Fechar"
+            >
+                <p>Tem certeza que deseja cancelar o pedido?</p>
             </Modal>
             <Toast
                 isVisible={toastVisible}

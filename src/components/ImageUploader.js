@@ -16,13 +16,14 @@ function ImageUploader({ onChange, initialImage }) {
 
     useEffect(() => {
         async function convertBlobToBase64() {
-            const base64 = await blobUrlToBase64(initialImage);
-            onChange(base64);
+            if (initialImage) {
+                const base64 = await blobUrlToBase64(initialImage);
+                onChange(base64);
+            }
         }
-
         setImage(initialImage);
         convertBlobToBase64();
-    }, []);
+    }, [initialImage]);
 
     const handleImageChange = async (e) => {
         e.preventDefault();

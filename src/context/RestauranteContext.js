@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useReducer, useState } from 'react';
 
 export const RestaurantContext = createContext();
 
@@ -8,7 +8,27 @@ export const RestaurantProvider = (props) => {
         restaurante: null
     });
 
-    // Carregar dados do localStorage
+    const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+    const stringToBlob = (string) => {
+        const byteCharacters = atob(string);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+            const slice = byteCharacters.slice(offset, offset + 512);
+            const byteNumbers = new Array(slice.length);
+
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays);
+    };
+
     useEffect(() => {
         const dataSalva = localStorage.getItem('data');
         if (dataSalva) {
@@ -16,20 +36,29 @@ export const RestaurantProvider = (props) => {
         }
     }, []);
 
-    useEffect(() => {
-        if (data.restaurante != null && data.usuario != null) {
-            localStorage.setItem('data', JSON.stringify(data));
+    const restauranteComBlobToString = (restaurante) => {
+        if (restaurante && restaurante.imagem && restaurante.imagem.binaryStream) {
+            const blob = stringToBlob(restaurante.imagem.binaryStream);
+            const blobString = URL.createObjectURL(blob);
+            return { ...restaurante, imagem: blobString };
         }
 
-    }, [data]);
+        return restaurante;
+    };
 
     const setUsuario = (usuario) => {
-        setData(prevState => ({ ...prevState, usuario }));
-    }
+        const newData = { ...data, usuario };
+        setData(newData);
+        localStorage.setItem('data', JSON.stringify(newData));
+    };
 
     const setRestaurante = (restaurante) => {
-        setData(prevState => ({ ...prevState, restaurante }));
-    }
+        const restauranteComBlob = restauranteComBlobToString(restaurante);
+        const newData = { ...data, restaurante: restauranteComBlob };
+        setData(newData);
+        localStorage.setItem('data', JSON.stringify(newData));
+        forceUpdate();
+    };
 
     return (
         <RestaurantContext.Provider value={{ data, setUsuario, setRestaurante }}>

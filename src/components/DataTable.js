@@ -82,7 +82,7 @@ const DataTable = ({ columns, data }) => {
                 {data?.map((row, index) => (
                     <tr key={index} className="hover:bg-secondary hover:text-white">
                         {columns.map((column, index) => (
-                            <td key={index} className="px-4 py-2">
+                            <td key={index} className="px-4 py-2 max-w-[250px] overflow-hidden">
                                 {column.render(row)}
                             </td>
                         ))}

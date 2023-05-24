@@ -3,6 +3,8 @@ import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import AddDish from '../pages/AddDish';
 import Dashboard from '../pages/Dashboard';
 import Login from '../pages/Login/Login';
+import NotFoundPage from '../pages/NotFounderPage';
+import RestaurantProfilePage from '../pages/Profile';
 import Register from '../pages/Register/Register';
 import Header from './Header';
 import PrivateRoute from './PrivateRoute';
@@ -30,8 +32,9 @@ const CustomRoutes = () => {
                 <Route path="/cadastro" component={Register} />
                 <PrivateRoute path="/pedidos" component={Dashboard} />
                 <PrivateRoute path="/pratos" component={AddDish} />
-                <PrivateRoute path="/mesas" component={Dashboard} />
+                <PrivateRoute path="/perfil" component={RestaurantProfilePage} />
                 <PrivateRoute path="/manage-reservations" component={Dashboard} />
+                <Route component={NotFoundPage} />
             </Switch>
         </>
     );
