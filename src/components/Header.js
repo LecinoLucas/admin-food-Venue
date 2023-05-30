@@ -51,6 +51,14 @@ const Header = () => {
                     >
                         Perfil
                     </NavLink>
+                    <div className="border-r border-white h-6"></div>
+                    <NavLink
+                        to="/relatorio"
+                        className="text-white"
+                        activeClassName="font-bold"
+                    >
+                        Relatório
+                    </NavLink>
                 </div>
                 <ProfileDropdown loggout={loggout} restaurantName={nome} />
             </nav>

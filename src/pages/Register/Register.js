@@ -50,7 +50,6 @@ const Register = () => {
                     },
                     nome,
                     descricao: "Modifique aqui sua descrição",
-                    imagem: "none",
                     aberto: false
                 })
                 localStorage.setItem("registerMessage", "true")

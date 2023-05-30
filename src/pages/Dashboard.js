@@ -2,7 +2,9 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
 import InfoIcon from '@mui/icons-material/Info';
 import Tooltip from '@mui/material/Tooltip';
+import { Stomp } from '@stomp/stompjs';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import SockJS from 'sockjs-client';
 import DataTable from '../components/DataTable';
 import Input from '../components/Input';
 import Modal from '../components/Modal';
@@ -21,6 +23,7 @@ const OrderPage = () => {
     const [toastType, setToastType] = useState('error');
     const [toastTitle, setToastTitle] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [client, setClient] = useState(null);
     const [orders, setOrders] = useState(null);
     const [openModalCancel, setOpenModalCancel] = useState(false);
     const { data, setUsuario, setRestaurante } = useContext(RestaurantContext);
@@ -82,6 +85,42 @@ const OrderPage = () => {
         }
 
     }, [data, axiosInstance]);
+
+    useEffect(() => {
+        const socket = new SockJS('http://localhost:8080/mywebsockets');
+        const stompClient = Stomp.over(socket);
+
+        stompClient.connect(
+            {
+                Authorization: localStorage.getItem('token')
+            },
+            (frame) => {
+                stompClient.subscribe(`/topic/pedidos/new/${data?.restaurante?.id}`, (message) => {
+                    if (message.body) {
+                        try {
+                            const parsedBody = JSON.parse(message.body);
+                            setOrders(prevOrders => [...prevOrders, parsedBody]);
+                        } catch (error) {
+                            console.error('Erro ao processar a mensagem:', error);
+                        }
+                    }
+                });
+            },
+            (error) => {
+                console.error('Erro no WebSocket:', error);
+            }
+        );
+
+        setClient(stompClient);
+
+        return () => {
+            if (client) {
+                client.disconnect(() => {
+                    console.log('Desconectado do WebSocket');
+                });
+            }
+        };
+    }, [data]);
 
     const setNextStepStatusOrder = () => {
         axiosInstance.put(`/api/pedidos/${selectedOrder.id}`, {

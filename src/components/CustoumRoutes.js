@@ -6,6 +6,7 @@ import Login from '../pages/Login/Login';
 import NotFoundPage from '../pages/NotFounderPage';
 import RestaurantProfilePage from '../pages/Profile';
 import Register from '../pages/Register/Register';
+import ReportPage from '../pages/Relatorio';
 import Header from './Header';
 import PrivateRoute from './PrivateRoute';
 
@@ -34,6 +35,7 @@ const CustomRoutes = () => {
                 <PrivateRoute path="/pratos" component={AddDish} />
                 <PrivateRoute path="/perfil" component={RestaurantProfilePage} />
                 <PrivateRoute path="/manage-reservations" component={Dashboard} />
+                <PrivateRoute path="/relatorio" component={ReportPage} />
                 <Route component={NotFoundPage} />
             </Switch>
         </>
