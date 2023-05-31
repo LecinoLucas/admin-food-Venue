@@ -23,7 +23,6 @@ const OrderPage = () => {
     const [toastType, setToastType] = useState('error');
     const [toastTitle, setToastTitle] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [client, setClient] = useState(null);
     const [orders, setOrders] = useState(null);
     const [openModalCancel, setOpenModalCancel] = useState(false);
     const { data, setUsuario, setRestaurante } = useContext(RestaurantContext);
@@ -111,16 +110,15 @@ const OrderPage = () => {
             }
         );
 
-        setClient(stompClient);
-
         return () => {
-            if (client) {
-                client.disconnect(() => {
+            if (stompClient) {
+                stompClient.disconnect(() => {
                     console.log('Desconectado do WebSocket');
                 });
             }
         };
-    }, [data]);
+    }, [data, setOrders]);
+
 
     const setNextStepStatusOrder = () => {
         axiosInstance.put(`/api/pedidos/${selectedOrder.id}`, {

@@ -20,7 +20,7 @@ const ReportPage = () => {
             .catch((error) => {
                 console.error('Erro ao obter relatório:', error);
             });
-    }, [axiosInstance]);
+    }, [axiosInstance, data?.restaurante?.id]);
 
     const handleDownloadPDF = () => {
         if (!reportData) {
@@ -42,12 +42,12 @@ const ReportPage = () => {
         doc.text('Informações Gerais', 15, 60);
         doc.autoTable({
             startY: 70,
-            head: [['Faturamento Diário', 'Faturamento Mensal', 'Ticket Médio', 'Total de Pratos Vendidos']],
+            head: [['Faturamento de Hoje', 'Faturamento Mensal', 'Ticket Médio', 'Total de Pratos Vendidos']],
             body: [[
-                'R$ ' + (reportData?.faturamentoDiario?.toFixed(2) || ''),
-                'R$ ' + (reportData?.faturamentoMensal?.toFixed(2) || ''),
-                'R$ ' + (reportData?.ticketMedio?.toFixed(2) || ''),
-                reportData?.totalPratosVendidos || ''
+                'R$ ' + (reportData?.faturamentoDiario?.toFixed(2) || '0.00'),
+                'R$ ' + (reportData?.faturamentoMensal?.toFixed(2) || '0.00'),
+                'R$ ' + (reportData?.ticketMedio?.toFixed(2) || '0.00'),
+                reportData?.totalPratosVendidos || '0'
             ]],
             headStyles: {
                 fillColor: '#FF7F50',
@@ -102,11 +102,11 @@ const ReportPage = () => {
             [
                 reportData.restauranteId,
                 reportData.restauranteNome,
-                reportData.faturamentoDiario.toFixed(2).replace('.', ','),
-                reportData.faturamentoMensal.toFixed(2).replace('.', ','),
-                reportData.ticketMedio.toFixed(2).replace('.', ','),
-                reportData.totalPedidos,
-                reportData.totalPratosVendidos,
+                reportData.faturamentoDiario.toFixed(2).replace('.', ',') || 0,
+                reportData.faturamentoMensal.toFixed(2).replace('.', ',') || 0,
+                reportData.ticketMedio.toFixed(2).replace('.', ',') || 0,
+                reportData.totalPedidos || 0,
+                reportData.totalPratosVendidos || 0,
                 '',
                 ''
             ]
@@ -162,20 +162,20 @@ const ReportPage = () => {
 
                 <div className="grid grid-cols-2 gap-4 mt-6">
                     <div className="bg-gray-100 p-4 rounded-md">
-                        <p className="text-lg font-bold">Faturamento Diário</p>
-                        <p className="text-3xl mt-2">R$ {reportData?.faturamentoDiario?.toFixed(2)}</p>
+                        <p className="text-lg font-bold">Faturamento de Hoje</p>
+                        <p className="text-3xl mt-2">R$ {reportData?.faturamentoDiario?.toFixed(2) || 0.00}</p>
                     </div>
                     <div className="bg-gray-100 p-4 rounded-md">
                         <p className="text-lg font-bold">Faturamento Mensal</p>
-                        <p className="text-3xl mt-2">R$ {reportData?.faturamentoMensal?.toFixed(2)}</p>
+                        <p className="text-3xl mt-2">R$ {reportData?.faturamentoMensal?.toFixed(2) || 0.00}</p>
                     </div>
                     <div className="bg-gray-100 p-4 rounded-md">
                         <p className="text-lg font-bold">Ticket Médio</p>
-                        <p className="text-3xl mt-2">R$ {reportData?.ticketMedio?.toFixed(2)}</p>
+                        <p className="text-3xl mt-2">R$ {reportData?.ticketMedio?.toFixed(2) || 0.00}</p>
                     </div>
                     <div className="bg-gray-100 p-4 rounded-md">
                         <p className="text-lg font-bold">Total de Pratos vendidos</p>
-                        <p className="text-3xl mt-2">{reportData?.totalPratosVendidos}</p>
+                        <p className="text-3xl mt-2">{reportData?.totalPratosVendidos || 0}</p>
                     </div>
                 </div>
 

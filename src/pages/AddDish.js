@@ -53,6 +53,22 @@ const AddDish = () => {
     }, [data, getDishs]);
 
     const handleFormSubmit = async () => {
+        if (data?.restaurante?.id === null ||
+            formData?.nome === null ||
+            formData?.preco === null ||
+            formData?.preco === null ||
+            formData?.imagem === null
+        ) {
+            setToastMessage(
+                "Não podem haver campos vazios"
+            );
+            setToastType('error');
+            setToastTitle('Preencha todos os campos!');
+            setToastVisible(true);
+            setOpenModalAddDish(false);
+            return;
+        }
+
         const bodyData = {
             restaurante: {
                 id: data?.restaurante?.id
@@ -98,7 +114,21 @@ const AddDish = () => {
             descricao: formData?.descricao,
             imagem: formData?.imagem,
         };
-
+        if (data?.restaurante?.id === null ||
+            formData?.nome === null ||
+            formData?.preco === null ||
+            formData?.preco === null ||
+            formData?.imagem === null
+        ) {
+            setToastMessage(
+                "Não podem haver campos vazios"
+            );
+            setToastType('error');
+            setToastTitle('Preencha todos os campos!');
+            setToastVisible(true);
+            setOpenModalAddDish(false);
+            return;
+        }
         axiosInstance
             .put(`/api/pratos/${selectedDish.id}`, bodyData)
             .then((resp) => {
@@ -154,13 +184,7 @@ const AddDish = () => {
         const filteredDishs = filterDishs(query);
         setFilteredDishs(filteredDishs);
     };
-
-    useEffect(() => {
-        const filteredDishs = filterDishs(searchQuery);
-        setFilteredDishs(filteredDishs);
-    }, [searchQuery]);
-
-    const filterDishs = (query) => {
+    const filterDishs = useCallback((query) => {
         if (!query) {
             return dishs;
         }
@@ -179,7 +203,14 @@ const AddDish = () => {
         );
 
         return filteredDishs;
-    };
+    }, [dishs]);
+
+    useEffect(() => {
+        const filteredDishs = filterDishs(searchQuery);
+        setFilteredDishs(filteredDishs);
+    }, [searchQuery, filterDishs]);
+
+
 
     const columns = [
         {

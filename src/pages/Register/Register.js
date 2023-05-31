@@ -30,6 +30,19 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (nome === null ||
+            email === null ||
+            senha === null ||
+            email === null ||
+            telefone === null ||
+            rua === null ||
+            bairro === null ||
+            cidade === null ||
+            estado === null
+        ) {
+            setToastVisible(true);
+            return;
+        }
         axiosInstance.post('/api/usuarios', {
             nome,
             email,

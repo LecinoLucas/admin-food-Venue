@@ -1,3 +1,4 @@
+// eslint-disable-next-line react-hooks/exhaustive-deps
 import { useEffect, useState } from "react";
 import { base64ToImageUrl } from "../utils/Base64ToImageUrl";
 import ImageUploader from "./ImageUploader";
@@ -8,7 +9,6 @@ function FormDish({ onChange, dish }) {
     const [descricao, setDescricao] = useState("");
     const [tipo, setTipo] = useState("");
     const [imagem, setImagem] = useState(null);
-
     useEffect(() => {
         if (dish) {
             setNome(dish.nome);
@@ -24,7 +24,6 @@ function FormDish({ onChange, dish }) {
             })
         }
     }, [dish]);
-
 
 
     const handleNomeChange = (e) => {

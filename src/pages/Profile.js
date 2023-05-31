@@ -8,7 +8,11 @@ import { base64ToImageUrl } from "../utils/Base64ToImageUrl";
 import useAxiosInstance from "../utils/axiosInstance";
 
 const RestaurantProfilePage = () => {
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({
+        nome: '',
+        descricao: '',
+        imagem: '',
+    });
     const [toastVisible, setToastVisible] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [toastType, setToastType] = useState("error");
@@ -47,7 +51,20 @@ const RestaurantProfilePage = () => {
             imagem: formData?.imagem,
             aberto: data?.restaurante?.aberto
         };
-
+        if (data?.restaurante?.id === null ||
+            formData?.nome === null ||
+            formData?.descricao === null ||
+            formData?.imagem === null ||
+            formData?.aberto === null
+        ) {
+            setToastMessage(
+                "Não podem haver campos vazios"
+            );
+            setToastType('error');
+            setToastTitle('Preencha todos os campos!');
+            setToastVisible(true);
+            return;
+        }
         axiosInstance
             .put(`/api/restaurantes/${data.restaurante.id}`, bodyData)
             .then((resp) => {
@@ -69,9 +86,6 @@ const RestaurantProfilePage = () => {
             });
     };
 
-    const handleFormChange = (data) => {
-        setFormData(data);
-    };
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Editar Perfil</h1>

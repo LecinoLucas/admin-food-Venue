@@ -1,3 +1,4 @@
+// eslint-disable-next-line react-hooks/exhaustive-deps
 import { readAndCompressImage } from 'browser-image-resizer';
 import React, { useEffect, useState } from "react";
 import { blobUrlToBase64 } from "../utils/Base64ToImageUrl";
